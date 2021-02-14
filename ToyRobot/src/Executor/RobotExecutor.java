@@ -1,3 +1,5 @@
+package ToyRobot.src.Executor;
+
 import java.util.logging.Logger;
 
 enum Direction {
@@ -7,7 +9,7 @@ enum Direction {
     SOUTH
 }
 
-public class Robot {
+public class RobotExecutor {
     private Table table;
 
     private boolean isOnTheTable;
@@ -15,58 +17,14 @@ public class Robot {
     private int currentX;
     private int currentY;
 
-    static Logger logger = Logger.getLogger(Robot.class.getName());
+    static Logger logger = Logger.getLogger(RobotExecutor.class.getName());
 
-    public Robot(Table table) {
+    public RobotExecutor(Table table) {
         this.table = table;
         isOnTheTable = false;
     }
 
-    public void action(CommandType commandType, String... extraCommand) {
-        if (!isValidAction(commandType, extraCommand)){
-            logger.warning("Command is not valid, will not proceed.");
-            return;
-        }
-        doAction(commandType, extraCommand);
-    }
-
-    private boolean isValidAction(CommandType commandType, String... extraCommand) {
-        switch (commandType) {
-            case PLACE:
-                return checkPLACE(extraCommand);
-            case MOVE:
-                return checkMOVE();
-            case LEFT:
-                return checkLEFT();
-            case RIGHT:
-                return checkRIGHT();
-            case REPORT:
-                return checkREPORT();
-        }
-        return false;
-    }
-
-    private void doAction(CommandType commandType, String... extraCommand) {
-        switch (commandType) {
-            case PLACE:
-                doPLACE(extraCommand);
-                break;
-            case MOVE:
-                doMOVE();
-                break;
-            case LEFT:
-                doLEFT();
-                break;
-            case RIGHT:
-                doRIGHT();
-                break;
-            case REPORT:
-                doREPORT();
-                break;
-        }
-    }
-
-    private boolean checkPLACE(String... locations) {
+    public boolean checkPLACE(String... locations) {
 //        try { ?? Do we still need if upper stream already validate the length of input
 //        } catch (IndexOutOfBoundsException e) {
 //            return false;
@@ -79,7 +37,7 @@ public class Robot {
         return false;
     }
 
-    private boolean checkMOVE() {
+    public boolean checkMOVE() {
         if (!isOnTheTable) return false;
 
         switch (direction) {
@@ -95,30 +53,23 @@ public class Robot {
         return false;
     }
 
-    private boolean checkLEFT() {
+    public boolean checkOnTheTable() {
         return isOnTheTable;
     }
 
-    private boolean checkRIGHT() {
-        return isOnTheTable;
-    }
 
-    private boolean checkREPORT() {
-        return isOnTheTable;
-    }
-
-    private void doPLACE(String... locations) {
+    public void doPLACE(String... locations) {
 //        try { ?? Do we still need if upper stream already validate the length of input
 //        } catch (IndexOutOfBoundsException e) {
 //            return false;
 //        }
-        int targetX = Integer.valueOf(locations[0]);
-        int targetY = Integer.valueOf(locations[1]);
+        currentX = Integer.valueOf(locations[0]);
+        currentY = Integer.valueOf(locations[1]);
         direction = Direction.valueOf(locations[2]);
         isOnTheTable = true;
     }
 
-    private void doMOVE() {
+    public void doMOVE() {
         switch (direction) {
             case WEST:
                 currentX -= 1;
@@ -135,7 +86,7 @@ public class Robot {
         }
     }
 
-    private void doLEFT() {
+    public void doLEFT() {
         // TODO: There must be a cleaner way to achieve this
         switch (direction) {
             case WEST:
@@ -153,7 +104,7 @@ public class Robot {
         }
     }
 
-    private void doRIGHT() {
+    public void doRIGHT() {
         // TODO: There must be a cleaner way to achieve this
         switch (direction) {
             case WEST:
@@ -171,7 +122,7 @@ public class Robot {
         }
     }
 
-    private void doREPORT() {
+    public void doREPORT() {
         logger.info(String.format("Robot is currently in location: (%d, %d) facing to (%s)", currentX, currentY,
                 direction.toString()));
     }
