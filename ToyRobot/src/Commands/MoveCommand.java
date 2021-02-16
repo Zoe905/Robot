@@ -7,7 +7,6 @@ import ToyRobot.src.Executor.RobotExecutor;
 
 public class MoveCommand implements ICommand {
     private RobotExecutor executor;
-    private List<String> extraCommand;
 
     private static Logger logger = Logger.getLogger(MoveCommand.class.getName());
 
@@ -20,7 +19,6 @@ public class MoveCommand implements ICommand {
     public void execute() {
         if(executor == null)
             logger.warning("Haven't assigned executor for ToyRobot.src.Commands.MoveCommand");
-        if (executor.checkMOVE())
-            executor.doMOVE();
+        executor.doMOVE();
     }
 }

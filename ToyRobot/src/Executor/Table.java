@@ -7,8 +7,11 @@ public class Table {
 
     private static Logger logger = Logger.getLogger(Table.class.getName());
 
-    public boolean isValidPosition(int x, int y) {
-        logger.info(String.format("Received new locations in table: (%d, %d)", x, y));
-        return x >= 0 && x < TABLE_SIZE && y >= 0 && y < TABLE_SIZE;
+    public boolean isValidPosition(Position position) {
+        logger.info(String.format("Received new locations in table: (%d, %d)", position.x(), position.y()));
+        return position.x() >= 0
+                && position.x() < TABLE_SIZE
+                && position.y() >= 0
+                && position.y() < TABLE_SIZE;
     }
 }

@@ -14,8 +14,7 @@ public class RobotExecutor {
 
     private boolean isOnTheTable;
     private Direction direction;
-    private int currentX;
-    private int currentY;
+    private Position position;
 
     static Logger logger = Logger.getLogger(RobotExecutor.class.getName());
 
@@ -24,70 +23,51 @@ public class RobotExecutor {
         isOnTheTable = false;
     }
 
-    public boolean checkPLACE(String... locations) {
-//        try { ?? Do we still need if upper stream already validate the length of input
-//        } catch (IndexOutOfBoundsException e) {
-//            return false;
-//        }
-        try {
-            return table.isValidPosition(Integer.valueOf(locations[0]), Integer.valueOf(locations[1]));
-        } catch (NumberFormatException e) {
-            logger.warning(String.format("Invalid PLACE command: %s %s"));
-        }
-        return false;
-    }
+    public Table getTable() { return table; }
 
-    public boolean checkMOVE() {
-        if (!isOnTheTable) return false;
-
-        switch (direction) {
-            case WEST:
-                return table.isValidPosition(currentX - 1, currentY);
-            case NORTH:
-                return table.isValidPosition(currentX, currentY + 1);
-            case EAST:
-                return table.isValidPosition(currentX + 1, currentY);
-            case SOUTH:
-                return table.isValidPosition(currentX, currentY - 1);
-        }
-        return false;
-    }
-
-    public boolean checkOnTheTable() {
-        return isOnTheTable;
-    }
-
-
-    public void doPLACE(String... locations) {
-//        try { ?? Do we still need if upper stream already validate the length of input
-//        } catch (IndexOutOfBoundsException e) {
-//            return false;
-//        }
-        currentX = Integer.valueOf(locations[0]);
-        currentY = Integer.valueOf(locations[1]);
-        direction = Direction.valueOf(locations[2]);
-        isOnTheTable = true;
+    public void jumpOnTable(Position position, Direction direction) {
+        this.position = position;
+        this.direction = direction;
+        this.isOnTheTable = true;
     }
 
     public void doMOVE() {
+        if (!isOnTheTable) {
+            logger.warning("Robot not on the table, ignore.");
+            return;
+        }
+
+        Position newPosition;
         switch (direction) {
             case WEST:
-                currentX -= 1;
+                newPosition = new Position(position.x() - 1, position.y());
                 break;
             case NORTH:
-                currentY += 1;
+                newPosition = new Position(position.x(), position.y() + 1);
                 break;
             case EAST:
-                currentX += 1;
+                newPosition = new Position(position.x() + 1, position.y());
                 break;
             case SOUTH:
-                currentY -= 1;
+                newPosition = new Position(position.x(), position.y() - 1);
                 break;
+            default:
+                logger.warning("Failed to resolve direction in MOVE command, ignore");
+                return;
         }
+
+        if (!table.isValidPosition(newPosition)) {
+            logger.warning("Invalid MOVE command, ignore");
+            return;
+        }
+        this.position = newPosition;
     }
 
     public void doLEFT() {
-        // TODO: There must be a cleaner way to achieve this
+        if (!isOnTheTable) {
+            logger.warning("Robot not on the table, ignore.");
+            return;
+        }
         switch (direction) {
             case WEST:
                 direction = Direction.SOUTH;
@@ -105,7 +85,10 @@ public class RobotExecutor {
     }
 
     public void doRIGHT() {
-        // TODO: There must be a cleaner way to achieve this
+        if (!isOnTheTable) {
+            logger.warning("Robot not on the table, ignore.");
+            return;
+        }
         switch (direction) {
             case WEST:
                 direction = Direction.NORTH;
@@ -123,7 +106,9 @@ public class RobotExecutor {
     }
 
     public void doREPORT() {
-        logger.info(String.format("Robot is currently in location: (%d, %d) facing to (%s)", currentX, currentY,
+        logger.info(String.format("Robot is currently in location: (%d, %d) facing to (%s)",
+                position.x(),
+                position.y(),
                 direction.toString()));
     }
 

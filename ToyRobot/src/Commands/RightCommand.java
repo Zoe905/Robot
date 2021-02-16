@@ -20,7 +20,6 @@ public class RightCommand implements ICommand{
     public void execute() {
         if(executor == null)
             logger.warning("Haven't assigned executor for ToyRobot.src.Commands.RightCommand");
-        if (executor.checkOnTheTable())
-            executor.doRIGHT();
+        executor.doRIGHT();
     }
 }
